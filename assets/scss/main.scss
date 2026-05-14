@@ -1,0 +1,306 @@
+// ===================================================
+// SCSS Variables (static, for radius / transitions)
+// ===================================================
+$radius-sm: 8px;
+$radius-md: 16px;
+$radius-lg: 24px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ===================================================
+// CSS Custom Properties — dark_star (default theme)
+// ===================================================
+:root {
+  --bg-primary:    #080b14;
+  --bg-surface:    #0e1120;
+  --bg-card:       rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+
+  --color-primary:   #6c63ff;
+  --color-secondary: #8b5cf6;
+  --color-accent:    #43e97b;
+
+  --text-primary:   #f0f0f8;
+  --text-secondary: #9a9ab0;
+  --text-muted:     #5a5a72;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --font-main:    'Inter', -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', 'Inter', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #6c63ff, #8b5cf6);
+  --gradient-title:   linear-gradient(135deg, #6c63ff, #a78bfa);
+
+  --scrollbar-track: #0e1120;
+  --scrollbar-thumb: rgba(108, 99, 255, 0.4);
+}
+
+// ===================================================
+// CSS Custom Properties — nature (清新森林系)
+// ===================================================
+.theme-nature {
+  --bg-primary:    #f0f7f0;
+  --bg-surface:    #e4f0e4;
+  --bg-card:       rgba(255, 255, 255, 0.72);
+  --bg-card-hover: rgba(255, 255, 255, 0.92);
+
+  --color-primary:   #2d7a4f;
+  --color-secondary: #52b788;
+  --color-accent:    #a8d5b5;
+
+  --text-primary:   #1a2e1f;
+  --text-secondary: #4a6741;
+  --text-muted:     #7a9e7e;
+
+  --border-color: rgba(45, 122, 79, 0.15);
+
+  --font-main:    'Inter', -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', 'Inter', sans-serif;
+
+  --gradient-primary: linear-gradient(135deg, #2d7a4f, #52b788);
+  --gradient-title:   linear-gradient(135deg, #2d7a4f, #74c69d);
+
+  --scrollbar-track: #e4f0e4;
+  --scrollbar-thumb: rgba(45, 122, 79, 0.35);
+}
+
+// ===================================================
+// CSS Custom Properties — terminal (駭客風)
+// ===================================================
+.theme-terminal {
+  --bg-primary:    #0a0a0a;
+  --bg-surface:    #0d1117;
+  --bg-card:       rgba(0, 255, 65, 0.04);
+  --bg-card-hover: rgba(0, 255, 65, 0.08);
+
+  --color-primary:   #00ff41;
+  --color-secondary: #00cc33;
+  --color-accent:    #39ff14;
+
+  --text-primary:   #00ff41;
+  --text-secondary: #00cc33;
+  --text-muted:     #1a6630;
+
+  --border-color: rgba(0, 255, 65, 0.18);
+
+  --font-main:    'Courier New', 'Lucida Console', monospace;
+  --font-heading: 'Courier New', 'Lucida Console', monospace;
+
+  --gradient-primary: linear-gradient(135deg, #00ff41, #00cc33);
+  --gradient-title:   linear-gradient(135deg, #00ff41, #39ff14);
+
+  --scrollbar-track: #0d1117;
+  --scrollbar-thumb: rgba(0, 255, 65, 0.35);
+}
+
+// ===================================================
+// Reset & Base
+// ===================================================
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+// ===================================================
+// Typography
+// ===================================================
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+// ===================================================
+// Layout Utilities
+// ===================================================
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: 100px 0;
+
+  @media (max-width: 768px) {
+    padding: 70px 0;
+  }
+}
+
+// ===================================================
+// Section Heading
+// ===================================================
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: var(--font-heading);
+
+  span {
+    background: var(--gradient-title);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 56px;
+  max-width: 520px;
+}
+
+// ===================================================
+// Card
+// ===================================================
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: $radius-md;
+  backdrop-filter: blur(12px);
+  transition: $transition;
+
+  &:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ===================================================
+// Buttons
+// ===================================================
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: $transition;
+  text-decoration: none;
+
+  &--primary {
+    background: var(--gradient-primary);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background: var(--bg-card);
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+// ===================================================
+// Scrollbar
+// ===================================================
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+// ===================================================
+// Element UI overrides
+// ===================================================
+.el-button--primary {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+}
+
+// ===================================================
+// Animations
+// ===================================================
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes leafDrift {
+  0%   { transform: translateY(100vh) translateX(0px) rotate(0deg); opacity: 0; }
+  5%   { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-120px) translateX(60px) rotate(360deg); opacity: 0; }
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.7s ease both;
+}
+
+// ===================================================
+// Nature background — floating leaves
+// ===================================================
+.nature-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(160deg, #e8f5e9 0%, #f1f8f1 40%, #e0f2e9 100%);
+}
+
+.nature-bg__leaf {
+  position: absolute;
+  bottom: -60px;
+  opacity: 0;
+  animation: leafDrift linear infinite;
+
+  svg { display: block; }
+}
