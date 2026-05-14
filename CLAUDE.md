@@ -119,6 +119,22 @@ Google Fonts（`nuxt.config.js` head.link 載入）：
 - **Inter**（300–700）— body 文字
 - **Space Grotesk**（400–700）— 標題
 
+## Docker
+
+`Dockerfile`（multi-stage）與 `nginx.conf`、`.dockerignore` 已就位：
+
+```bash
+docker build \
+  --build-arg API_BASE_URL=https://api.example.com/api \
+  --build-arg BACKEND_URL=https://api.example.com \
+  -t ponepone-frontend .
+docker run -p 3001:80 ponepone-frontend
+```
+
+- Stage 1（`node:18-alpine`）：`npm ci` + `npm run generate`，產出 `dist/`
+- Stage 2（`nginx:alpine`）：serving static files，`try_files $uri /index.html` 支援 SPA 動態路由
+- Nuxt 2 generate 輸出 `200.html`（非 `index.html`），build 時已 `cp dist/200.html dist/index.html`
+
 ## Known Gotchas
 
 - **node-sass 不相容 Node 24**：安裝時 gyp 永遠不回調，必須用 `sass`（Dart Sass）替代
