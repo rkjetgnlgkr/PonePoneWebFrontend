@@ -93,7 +93,7 @@ UPDATE layout_config SET theme_style = 'terminal' WHERE user_id = 1;
 | `components/NavBar.vue` | 頂部導覽列，anchor 連結 + Hire Me 按鈕 |
 | `components/HeroSection.vue` | Hero banner：姓名、職稱、bio、社群連結、頭像 |
 | `components/AboutSection.vue` | 關於我：統計數字 + bio 詳細 |
-| `components/PortfolioSection.vue` | 作品集 Grid，含圖片 |
+| `components/PortfolioSection.vue` | 作品集 Grid；hover 顯示「查看專案」按鈕（有圖片時才出現），點擊開啟圖片燈箱 Dialog（左右切換、dot 導覽、鍵盤支援）；「前往連結」維持外部連結 |
 | `components/SkillsSection.vue` | 技能展示，含熟練度進度條 |
 | `components/ExperienceSection.vue` | 工作經歷時間軸 |
 | `components/ContactSection.vue` | 聯絡方式 + 社群連結 + Footer |
