@@ -20,10 +20,14 @@
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </div>
             <div class="portfolio__img-overlay">
-              <a v-if="item.url" :href="item.url" target="_blank" rel="noopener" class="btn btn--primary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <button
+                v-if="item.images && item.images.length"
+                class="btn btn--primary"
+                @click="openGallery(item)"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                 查看專案
-              </a>
+              </button>
             </div>
           </div>
           <div class="portfolio__info">
@@ -37,6 +41,63 @@
         </div>
       </div>
     </div>
+
+    <!-- 圖片 Dialog -->
+    <transition name="gallery-fade">
+      <div v-if="gallery.visible" class="gallery-overlay" @click.self="closeGallery">
+        <div class="gallery-dialog">
+          <button class="gallery-close" @click="closeGallery" aria-label="關閉">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+
+          <div class="gallery-img-wrap">
+            <transition :name="gallery.direction === 'next' ? 'slide-left' : 'slide-right'" mode="out-in">
+              <img
+                :key="gallery.index"
+                :src="getImageUrl(gallery.images[gallery.index].image_path)"
+                :alt="gallery.name + ' - 圖片 ' + (gallery.index + 1)"
+                class="gallery-img"
+              />
+            </transition>
+          </div>
+
+          <button
+            v-if="gallery.images.length > 1"
+            class="gallery-nav gallery-nav--prev"
+            @click="prevImage"
+            aria-label="上一張"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button
+            v-if="gallery.images.length > 1"
+            class="gallery-nav gallery-nav--next"
+            @click="nextImage"
+            aria-label="下一張"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <div class="gallery-footer">
+            <p class="gallery-title">{{ gallery.name }}</p>
+            <p class="gallery-counter" v-if="gallery.images.length > 1">
+              {{ gallery.index + 1 }} / {{ gallery.images.length }}
+            </p>
+          </div>
+
+          <div v-if="gallery.images.length > 1" class="gallery-dots">
+            <button
+              v-for="(img, i) in gallery.images"
+              :key="i"
+              class="gallery-dot"
+              :class="{ active: i === gallery.index }"
+              @click="goToImage(i)"
+              :aria-label="'跳至圖片 ' + (i + 1)"
+            />
+          </div>
+        </div>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -45,11 +106,58 @@ export default {
   props: {
     portfolios: { type: Array, default: () => [] }
   },
+  data() {
+    return {
+      gallery: {
+        visible: false,
+        images: [],
+        index: 0,
+        name: '',
+        direction: 'next'
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.onKeydown)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.onKeydown)
+  },
   methods: {
     getImageUrl(path) {
       if (!path) return ''
       if (path.startsWith('http')) return path
       return `${process.env.BACKEND_URL || 'http://localhost:8080'}${path}`
+    },
+    openGallery(item) {
+      this.gallery.images = item.images
+      this.gallery.name = item.name
+      this.gallery.index = 0
+      this.gallery.direction = 'next'
+      this.gallery.visible = true
+      document.body.style.overflow = 'hidden'
+    },
+    closeGallery() {
+      this.gallery.visible = false
+      document.body.style.overflow = ''
+    },
+    nextImage() {
+      this.gallery.direction = 'next'
+      this.gallery.index = (this.gallery.index + 1) % this.gallery.images.length
+    },
+    prevImage() {
+      this.gallery.direction = 'prev'
+      this.gallery.index = (this.gallery.index - 1 + this.gallery.images.length) % this.gallery.images.length
+    },
+    goToImage(i) {
+      this.gallery.direction = i > this.gallery.index ? 'next' : 'prev'
+      this.gallery.index = i
+    },
+    onKeydown(e) {
+      if (!this.gallery.visible) return
+      if (e.key === 'ArrowRight') this.nextImage()
+      else if (e.key === 'ArrowLeft') this.prevImage()
+      else if (e.key === 'Escape') this.closeGallery()
     }
   }
 }
@@ -152,4 +260,153 @@ export default {
     &:hover { gap: 10px; }
   }
 }
+
+// Gallery Dialog
+.gallery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.gallery-dialog {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  background: var(--bg-card, #131624);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gallery-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(108, 99, 255, 0.5); }
+}
+
+.gallery-img-wrap {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #0a0d1a;
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 5;
+
+  &:hover {
+    background: rgba(108, 99, 255, 0.6);
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  &--prev { left: 14px; }
+  &--next { right: 14px; }
+}
+
+.gallery-footer {
+  padding: 14px 20px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gallery-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #e8e8f0);
+}
+
+.gallery-counter {
+  font-size: 0.8rem;
+  color: var(--text-muted, #8888aa);
+  white-space: nowrap;
+}
+
+.gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 20px 16px;
+}
+
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+
+  &.active {
+    background: var(--color-primary, #6c63ff);
+    transform: scale(1.3);
+  }
+
+  &:hover:not(.active) { background: rgba(255, 255, 255, 0.5); }
+}
+
+// Gallery transitions
+.gallery-fade-enter-active,
+.gallery-fade-leave-active { transition: opacity 0.25s ease; }
+.gallery-fade-enter,
+.gallery-fade-leave-to { opacity: 0; }
+
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.3s ease;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.slide-left-enter { transform: translateX(100%); opacity: 0; }
+.slide-left-leave-to { transform: translateX(-100%); opacity: 0; }
+.slide-right-enter { transform: translateX(-100%); opacity: 0; }
+.slide-right-leave-to { transform: translateX(100%); opacity: 0; }
 </style>
