@@ -194,6 +194,7 @@ export default {
     font-size: 0.875rem;
     color: var(--text-secondary);
     line-height: 1.7;
+    white-space: pre-wrap;
   }
 }
 </style>
