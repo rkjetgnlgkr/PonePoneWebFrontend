@@ -10,9 +10,8 @@
       </div>
 
       <div class="experience__timeline" v-else>
-        <div v-for="(exp, i) in experiences" :key="exp.id"
-             class="experience__item"
-             :class="{ 'experience__item--left': i % 2 === 0, 'experience__item--right': i % 2 !== 0 }">
+        <div v-for="exp in experiences" :key="exp.id"
+             class="experience__item">
           <div class="experience__dot">
             <div class="experience__dot-inner" :class="{ active: exp.is_current }"></div>
           </div>
@@ -73,52 +72,34 @@ export default {
 
   &__timeline {
     position: relative;
-    max-width: 800px;
+    max-width: 860px;
     margin: 0 auto;
+    padding-left: 40px;
 
     &::before {
       content: '';
       position: absolute;
-      left: 50%;
+      left: 12px;
       top: 0; bottom: 0;
       width: 1px;
       background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--color-primary) 30%, transparent), transparent);
-      transform: translateX(-50%);
-
-      @media (max-width: 700px) {
-        left: 16px;
-      }
     }
   }
 
   &__item {
     display: flex;
-    gap: 32px;
+    gap: 20px;
     margin-bottom: 40px;
     position: relative;
-
-    &--left  { flex-direction: row; }
-    &--right { flex-direction: row-reverse; }
-
-    @media (max-width: 700px) {
-      flex-direction: row !important;
-      padding-left: 44px;
-    }
 
     .experience__card { flex: 1; }
   }
 
   &__dot {
     position: absolute;
-    left: 50%;
+    left: -28px;
     top: 20px;
-    transform: translateX(-50%);
     z-index: 1;
-
-    @media (max-width: 700px) {
-      left: 16px;
-      transform: none;
-    }
   }
 
   &__dot-inner {
@@ -136,15 +117,7 @@ export default {
 
   &__card {
     padding: 22px 24px;
-    max-width: calc(50% - 28px);
-
-    @media (max-width: 700px) {
-      max-width: 100%;
-    }
   }
-
-  &__item--left  .experience__card { margin-right: auto; }
-  &__item--right .experience__card { margin-left: auto; }
 
   &__header {
     display: flex;
